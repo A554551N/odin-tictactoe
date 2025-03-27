@@ -30,7 +30,10 @@ body {
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
 }
-
+.cell {
+    font-size: 10rem;
+    text-align: center;
+}
 .col0-cell {
     grid-column-start: 1;
     border-right: var(--grid-borders);

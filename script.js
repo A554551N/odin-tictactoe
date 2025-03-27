@@ -30,16 +30,16 @@ const gameBoard = (function() {
 
     const takeTurn = (x,y) => {
         if (gameboardArr[x][y] !== undefined) {
-            return "Space is Occupied";
+            return false;
         }
         gameboardArr[x][y] = currentTurn;
+        console.log(`Current Turn: ${currentTurn}`)
         gameOver = evaluateWin();
         console.log(`Game Over: ${gameOver}`)
         if (gameOver) {
-            return("Game Over!")
+            return true;
         } else {
             nextTurn();
-            return(`It's ${currentTurn}'s turn.`)
         }
     }
 
@@ -59,17 +59,22 @@ const gameBoard = (function() {
         }
         
         /*this is a diagonal win*/
-        if ((gameboardArr[0][0] === gameboardArr[1][1] &&
+        if (((gameboardArr[0][0] === gameboardArr[1][1] &&
             gameboardArr[1][1] === gameboardArr[2][2]) || 
             (gameboardArr[0][2] === gameboardArr[1][1] && 
-            gameboardArr[1][1]=== gameboardArr[2][0])) {
+            gameboardArr[1][1]=== gameboardArr[2][0])) &&
+            gameboardArr[1][1] !== undefined) {
+            console.log("Diag Win");
             return true;
         }
 
         /*this is a column win*/
         for (col of gameboardArr) {
-            if (col[0] === col[1] &&
-                col[1] === col[2]) {
+            if ((col[0] === col[1] &&
+                col[1] === col[2]) &&
+                (col[0] !== undefined)) {
+                console.table([col[0],col[1],col[2]])
+                console.log("Column Win");
                 return true;
             }
         }
@@ -78,6 +83,7 @@ const gameBoard = (function() {
         for(let y=0;y<3;y++){
             if(gameboardArr[0][y] === gameboardArr[1][y] &&
                 gameboardArr[1][y] === gameboardArr[2][y]) {
+                    console.log("Row Win");
                     return true;   
                 }
         }
@@ -88,7 +94,7 @@ const gameBoard = (function() {
 
 const screenManager = (() => {
     const gameContainer = document.querySelector(".game-container")
-    const updateScreen = (boardArr) => {
+    const drawScreen = (boardArr) => {
         gameContainer.replaceChildren();
         for(let x = 0; x < 3; x++) {
             for(let y = 0;y<3;y++) {
@@ -98,17 +104,24 @@ const screenManager = (() => {
                 gameCell.classList.add("cell");
                 gameCell.dataset.x=x;
                 gameCell.dataset.y=y;
+                gameCell.textContent = boardArr[x][y];
+
                 gameCell.addEventListener("click", (e) => {
                     const xPos = e.target.dataset.x;
                     const yPos = e.target.dataset.y;
-                    console.log(`${xPos}:${yPos}`)
-                    return {xPos, yPos};
+                    const gameIsOver = gameBoard.takeTurn(xPos,yPos);
+                    screenManager.drawScreen(gameBoard.getGameboard())
+                    if (gameIsOver) {
+                        alert(`Game Over!  Winner: ${gameBoard.getCurrentTurn()}`)
+                        gameContainer.display="none";
+                    }
                 })
+
                 gameContainer.appendChild(gameCell);
             }
         }
     }
-    return {updateScreen,}
+    return {drawScreen,}
 
 })()
 /*Sample for diagonal win*/
@@ -136,4 +149,4 @@ console.log(gameBoard.takeTurn(2,0));
 
 console.log(gameBoard.getGameboard());*/
 
-screenManager.updateScreen(gameBoard.getGameboard());
+screenManager.drawScreen(gameBoard.getGameboard());
