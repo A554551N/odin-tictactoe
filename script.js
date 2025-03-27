@@ -86,6 +86,31 @@ const gameBoard = (function() {
     return { nextTurn, getCurrentTurn, getGameboard, takeTurn,}
 })();
 
+const screenManager = (() => {
+    const gameContainer = document.querySelector(".game-container")
+    const updateScreen = (boardArr) => {
+        gameContainer.replaceChildren();
+        for(let x = 0; x < 3; x++) {
+            for(let y = 0;y<3;y++) {
+                gameCell = document.createElement("div");
+                gameCell.classList.add(`row${y}-cell`);
+                gameCell.classList.add(`col${x}-cell`);
+                gameCell.classList.add("cell");
+                gameCell.dataset.x=x;
+                gameCell.dataset.y=y;
+                gameCell.addEventListener("click", (e) => {
+                    const xPos = e.target.dataset.x;
+                    const yPos = e.target.dataset.y;
+                    console.log(`${xPos}:${yPos}`)
+                    return {xPos, yPos};
+                })
+                gameContainer.appendChild(gameCell);
+            }
+        }
+    }
+    return {updateScreen,}
+
+})()
 /*Sample for diagonal win*/
 /*console.log("Start: It's X's Turn")
 console.log(gameBoard.takeTurn(1,1));
@@ -102,11 +127,13 @@ console.log(gameBoard.takeTurn(0,1));
 console.log(gameBoard.takeTurn(2,0));
 console.log(gameBoard.takeTurn(0,2));*/
 
-console.log("Start: It's X's Turn")
+/*console.log("Start: It's X's Turn")
 console.log(gameBoard.takeTurn(0,0));
 console.log(gameBoard.takeTurn(0,1));
 console.log(gameBoard.takeTurn(1,0));
 console.log(gameBoard.takeTurn(0,2));
 console.log(gameBoard.takeTurn(2,0));
 
-console.log(gameBoard.getGameboard());
+console.log(gameBoard.getGameboard());*/
+
+screenManager.updateScreen(gameBoard.getGameboard());
