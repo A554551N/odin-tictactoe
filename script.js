@@ -7,3 +7,23 @@ function Player(name,side) {
 context.*/
 const player1 = Player("Player 1","X");
 const player2 = Player("Player 2","O");
+
+const gameBoard = (function() {
+    /*Create a 3x3 grid [x][y] to access*/
+    const gameboardArr = [new Array(3),new Array(3),new Array(3)];
+    /*newly created boards always start on X's turn*/
+    let currentTurn = "X";
+
+    const nextTurn = () => {
+        if (currentTurn === "X") {
+            currentTurn = "O";
+        } else {
+            currentTurn = "X";
+        }
+    }
+
+    const getCurrentTurn = () => {
+        return currentTurn;
+    }
+    return { nextTurn, getCurrentTurn,}
+})();
