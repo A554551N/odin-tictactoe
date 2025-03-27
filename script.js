@@ -25,5 +25,18 @@ const gameBoard = (function() {
     const getCurrentTurn = () => {
         return currentTurn;
     }
-    return { nextTurn, getCurrentTurn,}
+
+    const takeTurn = (x,y) => {
+        if (gameboardArr[x][y] !== undefined) {
+            return "Space is Occupied";
+        }
+        gameboardArr[x][y] = currentTurn;
+        nextTurn();
+    }
+
+    const getGameboard = () => {
+        return gameboardArr;
+    }
+
+    return { nextTurn, getCurrentTurn, getGameboard, takeTurn,}
 })();
