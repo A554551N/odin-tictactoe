@@ -3,43 +3,53 @@ function Player(name,side) {
     return {name, side}
 };
 
-/*Create two players.  These are currently in the global
-context.*/
-const player1 = Player("Player 1","X");
-const player2 = Player("Player 2","O");
-
-let totalMoves = 1;
 const gameBoard = (function() {
     /*Create a 3x3 grid [x][y] to access*/
-    const gameboardArr = [new Array(3),new Array(3),new Array(3)];
+    let gameboardArr = [new Array(3),new Array(3),new Array(3)];
     /*newly created boards always start on X's turn*/
-    let currentTurn = "X";
+    let player1;
+    let player2;
+    let currentPlayer;
+    let totalMoves = 1;
+
+    const resetBoard = () => {
+        currentPlayer = player1;
+        totalMoves = 1;
+        gameboardArr = [new Array(3),new Array(3),new Array(3)];
+        screenManager.drawScreen(gameboardArr);
+    }
+    const setPlayers = (p1,p2) => {
+        player1 = p1;
+        player2 = p2;
+        currentPlayer = player1;
+    }
 
     const nextTurn = () => {
         totalMoves ++;
-        if (currentTurn === "X") {
-            currentTurn = "O";
+        if (currentPlayer === player1) {
+            console.log("kicking")
+            currentPlayer = player2;
         } else {
-            currentTurn = "X";
+            currentPlayer = player1;
         }
     }
 
-    const getCurrentTurn = () => {
-        return currentTurn;
+    const getCurrentPlayer = () => {
+        return currentPlayer;
     }
 
     const takeTurn = (x,y) => {
         if (gameboardArr[x][y] !== undefined) {
             return false;
         }
-        gameboardArr[x][y] = currentTurn;
-        console.log(`Current Turn: ${currentTurn}`)
+        gameboardArr[x][y] = currentPlayer.side;
         gameOver = evaluateWin();
-        console.log(`Game Over: ${gameOver}`)
-        if (gameOver) {
-            return true;
+        console.log(gameOver);
+        if (gameOver.gameEnd) {
+            return gameOver;
         } else {
             nextTurn();
+            return gameOver;
         }
     }
 
@@ -54,8 +64,7 @@ const gameBoard = (function() {
 
         /*this is a logic shortcut, the game can't end before move 5*/
         if (totalMoves<5) {
-            console.log(`Move #${totalMoves}, no winnner`)
-            return false;
+            return {gameEnd:false,result:null};
         }
         
         /*this is a diagonal win*/
@@ -65,7 +74,7 @@ const gameBoard = (function() {
             gameboardArr[1][1]=== gameboardArr[2][0])) &&
             gameboardArr[1][1] !== undefined) {
             console.log("Diag Win");
-            return true;
+            return {gameEnd:true,result:currentPlayer};
         }
 
         /*this is a column win*/
@@ -75,25 +84,52 @@ const gameBoard = (function() {
                 (col[0] !== undefined)) {
                 console.table([col[0],col[1],col[2]])
                 console.log("Column Win");
-                return true;
+                return {gameEnd:true,result:currentPlayer};
             }
         }
 
         /*this is a row win*/
         for(let y=0;y<3;y++){
             if(gameboardArr[0][y] === gameboardArr[1][y] &&
-                gameboardArr[1][y] === gameboardArr[2][y]) {
+                gameboardArr[1][y] === gameboardArr[2][y] &&
+                gameboardArr[0][y] !== undefined) {
                     console.log("Row Win");
-                    return true;   
+                    console.log([gameboardArr[0][y],gameboardArr[1][y],gameboardArr[2][y]])
+                    return {gameEnd:true,result:currentPlayer};   
                 }
         }
-        return false;
+
+        if (totalMoves === 9) {
+            return {gameEnd:true,result:"Tie"}
+        }
+        return {gameEnd:false,result:null};
     }
-    return { nextTurn, getCurrentTurn, getGameboard, takeTurn,}
+    return { nextTurn, getCurrentPlayer, getGameboard, takeTurn, setPlayers, resetBoard}
 })();
 
 const screenManager = (() => {
     const gameContainer = document.querySelector(".game-container")
+    const background = document.querySelector(".modal-bg");
+    const startModal = document.querySelector("#start-modal");
+    const endModal = document.querySelector("#end-modal");
+
+    const resetButton = document.querySelector("#reset-button");
+    resetButton.addEventListener("click",() => {
+        gameBoard.resetBoard();
+        endModal.classList.toggle("hidden");
+        background.classList.toggle("hidden");
+
+    })
+
+    const startButton = document.querySelector("#start-button");
+    startButton.addEventListener("click", () => {
+        const p1Name = document.querySelector("#p1-name").value;
+        const p2Name = document.querySelector("#p2-name").value;
+        gameBoard.setPlayers(Player(p1Name,"X"),Player(p2Name,"O"));
+        console.log(gameBoard.getCurrentPlayer());
+        background.classList.add("hidden");
+        startModal.classList.add("hidden");
+    })
     const drawScreen = (boardArr) => {
         gameContainer.replaceChildren();
         for(let x = 0; x < 3; x++) {
@@ -109,11 +145,18 @@ const screenManager = (() => {
                 gameCell.addEventListener("click", (e) => {
                     const xPos = e.target.dataset.x;
                     const yPos = e.target.dataset.y;
-                    const gameIsOver = gameBoard.takeTurn(xPos,yPos);
+                    const gameResult = gameBoard.takeTurn(xPos,yPos);
                     screenManager.drawScreen(gameBoard.getGameboard())
-                    if (gameIsOver) {
-                        alert(`Game Over!  Winner: ${gameBoard.getCurrentTurn()}`)
-                        gameContainer.display="none";
+                    if (gameResult.gameEnd) {
+                        const endText = document.querySelector("#win-text");
+                        if (gameResult.result === "Tie") {
+                            endText.textContent = "Tie Game!"
+                        } else {
+                            console.log(gameResult.result)
+                            endText.textContent = `Winner - ${gameResult.result.name}!`
+                        }
+                        endModal.classList.toggle("hidden")
+                        background.classList.toggle("hidden");
                     }
                 })
 
