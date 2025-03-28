@@ -129,6 +129,7 @@ const screenManager = (() => {
         console.log(gameBoard.getCurrentPlayer());
         background.classList.add("hidden");
         startModal.classList.add("hidden");
+        gameBoard.resetBoard()
     })
     const drawScreen = (boardArr) => {
         gameContainer.replaceChildren();
@@ -167,29 +168,3 @@ const screenManager = (() => {
     return {drawScreen,}
 
 })()
-/*Sample for diagonal win*/
-/*console.log("Start: It's X's Turn")
-console.log(gameBoard.takeTurn(1,1));
-console.log(gameBoard.takeTurn(2,0));
-console.log(gameBoard.takeTurn(0,0));
-console.log(gameBoard.takeTurn(0,2));
-console.log(gameBoard.takeTurn(2,2));*/
-
-/*Sample for a row win*/
-/*console.log("Start: It's X's Turn")
-console.log(gameBoard.takeTurn(0,0));
-console.log(gameBoard.takeTurn(1,0));
-console.log(gameBoard.takeTurn(0,1));
-console.log(gameBoard.takeTurn(2,0));
-console.log(gameBoard.takeTurn(0,2));*/
-
-/*console.log("Start: It's X's Turn")
-console.log(gameBoard.takeTurn(0,0));
-console.log(gameBoard.takeTurn(0,1));
-console.log(gameBoard.takeTurn(1,0));
-console.log(gameBoard.takeTurn(0,2));
-console.log(gameBoard.takeTurn(2,0));
-
-console.log(gameBoard.getGameboard());*/
-
-screenManager.drawScreen(gameBoard.getGameboard());
