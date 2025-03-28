@@ -27,7 +27,6 @@ const gameBoard = (function() {
     const nextTurn = () => {
         totalMoves ++;
         if (currentPlayer === player1) {
-            console.log("kicking")
             currentPlayer = player2;
         } else {
             currentPlayer = player1;
@@ -44,7 +43,6 @@ const gameBoard = (function() {
         }
         gameboardArr[x][y] = currentPlayer.side;
         gameOver = evaluateWin();
-        console.log(gameOver);
         if (gameOver.gameEnd) {
             return gameOver;
         } else {
@@ -73,7 +71,6 @@ const gameBoard = (function() {
             (gameboardArr[0][2] === gameboardArr[1][1] && 
             gameboardArr[1][1]=== gameboardArr[2][0])) &&
             gameboardArr[1][1] !== undefined) {
-            console.log("Diag Win");
             return {gameEnd:true,result:currentPlayer};
         }
 
@@ -82,8 +79,6 @@ const gameBoard = (function() {
             if ((col[0] === col[1] &&
                 col[1] === col[2]) &&
                 (col[0] !== undefined)) {
-                console.table([col[0],col[1],col[2]])
-                console.log("Column Win");
                 return {gameEnd:true,result:currentPlayer};
             }
         }
@@ -93,8 +88,6 @@ const gameBoard = (function() {
             if(gameboardArr[0][y] === gameboardArr[1][y] &&
                 gameboardArr[1][y] === gameboardArr[2][y] &&
                 gameboardArr[0][y] !== undefined) {
-                    console.log("Row Win");
-                    console.log([gameboardArr[0][y],gameboardArr[1][y],gameboardArr[2][y]])
                     return {gameEnd:true,result:currentPlayer};   
                 }
         }
@@ -126,7 +119,6 @@ const screenManager = (() => {
         const p1Name = document.querySelector("#p1-name").value;
         const p2Name = document.querySelector("#p2-name").value;
         gameBoard.setPlayers(Player(p1Name,"X"),Player(p2Name,"O"));
-        console.log(gameBoard.getCurrentPlayer());
         background.classList.add("hidden");
         startModal.classList.add("hidden");
         gameBoard.resetBoard()
@@ -153,7 +145,6 @@ const screenManager = (() => {
                         if (gameResult.result === "Tie") {
                             endText.textContent = "Tie Game!"
                         } else {
-                            console.log(gameResult.result)
                             endText.textContent = `Winner - ${gameResult.result.name}!`
                         }
                         endModal.classList.toggle("hidden")
